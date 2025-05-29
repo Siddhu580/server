@@ -22,8 +22,18 @@ CORS(app, resources={
     }
 })
 
-# Firebase Initialization
-cred = credentials.Certificate(r"D:\Mini_project\gate-pass-system\gatepasssystem-589c9-firebase-adminsdk-fbsvc-d758fb922b.json")
+# Firebase Initialization from base64 environment variable
+import os
+import base64
+import json
+
+firebase_creds_b64 = os.environ.get('FIREBASE_CREDENTIALS_BASE64')
+if not firebase_creds_b64:
+    raise Exception("Missing FIREBASE_CREDENTIALS_BASE64 environment variable")
+
+firebase_creds_json = base64.b64decode(firebase_creds_b64)
+cred_dict = json.loads(firebase_creds_json)
+cred = credentials.Certificate(cred_dict)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
